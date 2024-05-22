@@ -3,11 +3,9 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-19 日 15:12 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>FPGA Notes</title>
-<meta name="author" content="Yuri Guimaraes" />
 <meta name="generator" content="Org Mode" />
 <link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/htmlize.css"/>
 <link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/bigblow.css"/>
@@ -28,62 +26,94 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orga7cb532">1. Introduction</a></li>
-<li><a href="#org52f59db">2. KV260 Application Development Analysis</a>
+<li><a href="#org65f8812">1. Introduction</a></li>
+<li><a href="#org43de056">2. 2024-05-19</a>
 <ul>
-<li><a href="#org5e5df29">2.1. VVAS</a></li>
+<li><a href="#org3c27bc4">2.1. Summary</a>
+<ul>
+<li><a href="#org363e975">2.1.1. Planning</a></li>
+<li><a href="#orgc23e082">2.1.2. Achievements</a></li>
 </ul>
 </li>
-<li><a href="#org6a17601">3. Weekly Reports</a>
-<ul>
-<li><a href="#org580274d">3.1. 2024-05-19</a></li>
+<li><a href="#orgca690db">2.2. MIPI-CSI2 Capture</a></li>
+<li><a href="#orgf15c340">2.3. VVAS</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orga7cb532" class="outline-2">
-<h2 id="orga7cb532"><span class="section-number-2">1.</span> Introduction</h2>
+<div id="outline-container-org65f8812" class="outline-2">
+<h2 id="org65f8812"><span class="section-number-2">1.</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-This is a test repository.
-Its purpose will be to store my notes and reports related to FPGA research.
+The purpose of this repository is to contain my notes and reports regarding FPGA research.
 </p>
-</div>
-</div>
-<div id="outline-container-org52f59db" class="outline-2">
-<h2 id="org52f59db"><span class="section-number-2">2.</span> KV260 Application Development Analysis</h2>
-<div class="outline-text-2" id="text-2">
-</div>
-<div id="outline-container-org5e5df29" class="outline-3">
-<h3 id="org5e5df29"><span class="section-number-3">2.1.</span> VVAS</h3>
-<div class="outline-text-3" id="text-2-1">
-<p>
-<a href="https://www.xilinx.com/products/design-tools/vitis/vvas.html">Vitis Video Analytics SDK</a> is Xilinx&rsquo;s software stack for building video processing applications.
-The methodology for creating camera processing applications seem to be based around the development of <a href="https://gstreamer.freedesktop.org/">GStreamer</a> plugins.
-</p>
-</div>
 </div>
 </div>
 
-<div id="outline-container-org6a17601" class="outline-2">
-<h2 id="org6a17601"><span class="section-number-2">3.</span> Weekly Reports</h2>
-<div class="outline-text-2" id="text-3">
-</div>
-<div id="outline-container-org580274d" class="outline-3">
-<h3 id="org580274d"><span class="section-number-3">3.1.</span> 2024-05-19</h3>
-<div class="outline-text-3" id="text-3-1">
+<div id="outline-container-org43de056" class="outline-2">
+<h2 id="org43de056"><span class="section-number-2">2.</span> 2024-05-19</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-center">
 <p>
-Learned about <a href="#org5e5df29">VVAS</a>.
+<b><a href="./2024-05-19.pdf">PDF Version</a></b>
+</p>
+</div>
+</div>
+<div id="outline-container-org3c27bc4" class="outline-3">
+<h3 id="org3c27bc4"><span class="section-number-3">2.1.</span> Summary</h3>
+<div class="outline-text-3" id="text-2-1">
+</div>
+<div id="outline-container-org363e975" class="outline-4">
+<h4 id="org363e975"><span class="section-number-4">2.1.1.</span> Planning</h4>
+<div class="outline-text-4" id="text-2-1-1">
+</div>
+<ol class="org-ol">
+<li><a id="org6798b3a"></a><span class="done DONE">DONE</span> Browse smartcam module source code<br /></li>
+<li><a id="org5566b90"></a><span class="done DONE">DONE</span> Compile smartcam code<br /></li>
+<li><a id="orgf151f17"></a><span class="todo TODO">TODO</span> Modify smartcam code to use other kernels<br /></li>
+</ol>
+</div>
+<div id="outline-container-orgc23e082" class="outline-4">
+<h4 id="orgc23e082"><span class="section-number-4">2.1.2.</span> Achievements</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<p>
+Modified the smartcam code in order to compile an executable that utilizes PL
+logic with high-level synthesis.
 </p>
 </div>
 </div>
 </div>
+<div id="outline-container-orgca690db" class="outline-3">
+<h3 id="orgca690db"><span class="section-number-3">2.2.</span> MIPI-CSI2 Capture</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Camera data is accessed via a DMA (direct memory access) channel.
+</p>
+
+<p>
+The image below, presented in <a href="https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/docs/smartcamera/docs/sw_arch_platform.html">Software Architecture of the Platform</a> represents a
+high-level overview of the pipeline.
+</p>
+<p>
+<img src="https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/_images/video_capture1.png" alt="video_capture1.png" />
+As can be seen, <code>/dev/video*</code> enables access to the camera via the DMA engine
+that connects directly to the <a href="https://www.xilinx.com/products/intellectual-property/v-frmbuf.html">Frmbuf Wr IP Core</a>.
+</p>
 </div>
-<div id="postamble" class="status">
-<p class="author">Author: Yuri Guimaraes</p>
-<p class="date">Created: 2024-05-19 日 15:12</p>
+</div>
+<div id="outline-container-orgf15c340" class="outline-3">
+<h3 id="orgf15c340"><span class="section-number-3">2.3.</span> VVAS</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+<a href="https://www.xilinx.com/products/design-tools/vitis/vvas.html">Vitis Video Analytics SDK</a> is Xilinx&rsquo;s software stack for building video processing applications.
+The methodology for creating camera processing applications seem to be based
+around the development of <a href="https://gstreamer.freedesktop.org/">GStreamer</a> plugins.
+</p>
+</div>
+</div>
+</div>
 </div>
 </body>
 </html>

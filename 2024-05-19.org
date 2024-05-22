@@ -1,0 +1,109 @@
+# #+title: 2024-05-19
+#+TITLE:     2024/05/19 Progress Report
+#+AUTHOR:    Yuri Guimaraes
+#+EMAIL:     yuri.kgpps@gmail.com
+# #+DATE:      2024-05-19 (Sunday)
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [allowframebreaks]
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+#+latex_header: \mode<beamer>{\useoutertheme{miniframes}}
+# #+latex_header: \AtBeginSection[]{\begin{frame}<beamer>\frametitle{Topic}\tableofcontents[currentsection]\end{frame}}
+# #+BIND: org-beamer-frame-default-options "allowframebreaks"
+# -*- org-export-allow-bind-keywords:t
+
+* Summary
+** Summary
+# :PROPERTIES:
+# :BEAMER_env: block
+# :BEAMER_col: 0.6
+# :END:
+*** Task List
+1. +Browse ~smartcam~ module source code.+
+2. +Compile ~smartcam~ code.+
+3. Modify ~smartcam~ code to use other kernels.
+*** @@latex:@@
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+- LOL
+- ABC
+
+**** Runtime
+- What is v4l2's role in acquiring the image from DMA?
+- How does GStreamer use v4l2?
+- How does an acceleration kernel run using v4l2/GStreamer?
+
+**** Building
+- What does the final software depend on?
+- What does the developer need to have ready in order to build the application?
+  - Dependencies?
+
+# ** Planning
+# ** Progress
+* Hardware-Software Architecture
+** MIPI-CSI2 Capture (Hardware)
+*** Col left
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+- MIPI source outputs to ~S_AXI_HP0_FPD~.
+- ~NV12~ format.
+*** @@latex:@@
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.6
+:END:
+# YUV420: Planar 8-bit YUV 4:2:0
+# NV12:   *Semi*-planar 8-bit YUV 4:2:0
+| NV12   | Planar 8-bit YUV 4:2:0        |
+| YUV420 | *Semi*-planar 8-bit YUV 4:2:0 |
+
+*** @@latex:@@
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_opt: [t]
+:END:
+#+CAPTION:      MIPI Capture Pipeline
+[[https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/_images/hw_cap_pp1.png]]
+** MIPI-CSI2 Capture (Software) I
+*** Col left
+:PROPERTIES:
+:BEAMER_col: 0.3
+:END:
+- Source accessible via ~v4l2~
+
+  \rightarrow ~/dev/media*~
+
+  \rightarrow ~/dev/video*~
+*** Col right
+:PROPERTIES:
+:BEAMER_col: 0.7
+:END:
+#+CAPTION:      Video Capture Diagram
+#+ATTR_LATEX:   :height 0.7\textheight
+[[https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/_images/video_capture1.png]]
+** MIPI-CSI2 Capture (Software) II
+Lol.
+#+CAPTION:      GStreamer Pipeline
+[[https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/_images/software-overall-data-flow1.png]]
+** Acceleration
+Acceleration on the new stack is based on HLS kernels. For vision, there is ~VVAS~.
+The Smart Camera application uses ~VVAS~ with ~GStreamer~.
+*** VVAS
+[[https://www.xilinx.com/products/design-tools/vitis/vvas.html][Vitis Video Analytics SDK]] is Xilinx's software stack for building video processing applications.
+*** Plugin Structure
+Use *GStreamer* plugins for creating computer vision pipelines.
+* Source Code Analysis
+** Folder Structure

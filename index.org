@@ -1,0 +1,47 @@
+#+TITLE: FPGA Notes
+#+AUTHOR: Yuri Guimaraes
+# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-bigblow.setup
+#+OPTIONS: author:nil date:nil timestamp:nil
+# -*- org-display-remote-inline-images:cache
+
+* Introduction
+# This is a test repository.
+# Its purpose will be to store my notes and reports related to FPGA research.
+The purpose of this repository is to contain my notes and reports regarding FPGA research.
+# For starters, please take a look at [[2024-05-19][this link]] for the first report.
+
+# *For the weekly reports, please head to [[Weekly Reports]].*
+
+# * ZynqMP Notions
+# ** Programmable Logic
+# ** DMA
+
+# #+INCLUDE: "./kria.org" :minlevel 1
+# * KV260 Application Development Analysis
+
+* 2024-05-19
+#+BEGIN_CENTER
+*[[file:./2024-05-19.pdf][PDF Version]]*
+#+END_CENTER
+** Summary
+*** Planning
+**** DONE Browse smartcam module source code
+**** DONE Compile smartcam code
+**** TODO Modify smartcam code to use other kernels
+*** Achievements
+Modified the smartcam code in order to compile an executable that utilizes PL
+logic with high-level synthesis.
+** MIPI-CSI2 Capture
+Camera data is accessed via a DMA (direct memory access) channel.
+
+The image below, presented in [[https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/docs/smartcamera/docs/sw_arch_platform.html][Software Architecture of the Platform]] represents a
+high-level overview of the pipeline.
+#+CAPTION:      Video Capture Diagram
+[[https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/_images/video_capture1.png]]
+As can be seen, ~/dev/video*~ enables access to the camera via the DMA engine
+that connects directly to the [[https://www.xilinx.com/products/intellectual-property/v-frmbuf.html][Frmbuf Wr IP Core]].
+** VVAS
+[[https://www.xilinx.com/products/design-tools/vitis/vvas.html][Vitis Video Analytics SDK]] is Xilinx's software stack for building video processing applications.
+The methodology for creating camera processing applications seem to be based
+around the development of [[https://gstreamer.freedesktop.org/][GStreamer]] plugins.
