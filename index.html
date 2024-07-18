@@ -1,119 +1,1464 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FPGA Notes</title>
-<meta name="generator" content="Org Mode" />
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/htmlize.css"/>
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/bigblow.css"/>
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/hideshow.css"/>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery-1.11.0.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery-ui-1.10.2.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery.localscroll-min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery.scrollTo-1.4.3.1-min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery.zclip.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/bigblow.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/hideshow.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
-</head>
-<body>
-<div id="content" class="content">
-<h1 class="title">FPGA Notes</h1>
-<div id="table-of-contents" role="doc-toc">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents" role="doc-toc">
-<ul>
-<li><a href="#org65f8812">1. Introduction</a></li>
-<li><a href="#org43de056">2. 2024-05-19</a>
-<ul>
-<li><a href="#org3c27bc4">2.1. Summary</a>
-<ul>
-<li><a href="#org363e975">2.1.1. Planning</a></li>
-<li><a href="#orgc23e082">2.1.2. Achievements</a></li>
-</ul>
-</li>
-<li><a href="#orgca690db">2.2. MIPI-CSI2 Capture</a></li>
-<li><a href="#orgf15c340">2.3. VVAS</a></li>
-</ul>
-</li>
-</ul>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/simple.css" id="theme" />
+    <link rel="stylesheet" href="none" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Nix Presentation
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+# Why care about Nix?
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->Nix allows for a **declarative** way to manage dependencies.
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Nix allows for **reproducible** (deterministic) builds.
+  - No need to hunt for differences in environments. If it builds once, it
+    should build everytime.
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->Nix allows for **isolated** environments.
+  - No need to worry about conflicting dependencies.
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->Nix allows for **efficient** builds.
+  - Efficient sharing of common dependencies.
+  - Able to avoid rebuilding packages across many machines via binary caching.
+  
+### NixOS
+<!-- .element: class="fragment" data-fragment-index="5" -->
+- &shy;<!-- .element: class="fragment" data-fragment-index="5" -->*NixOS* allows for a **declarative** way to manage Linux systems.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# What is Nix?
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->`Nix`: The Language
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->`Nix`: The Package Manager
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->`Nixpkgs`: The package collection
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->`NixOS`: The Nix-based Linux Operating System
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 5%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+### `Nix`: The Language
+- Designed for conveniently creating and composing *derivations*.
+- Domain-specific, purely functional, lazily evaluated, and dynamically typed.
+- A good resource for learning the basics: [nix.dev - Nix Language](https://nix.dev/tutorials/nix-language.html).
 </div>
 
-<div id="outline-container-org65f8812" class="outline-2">
-<h2 id="org65f8812"><span class="section-number-2">1.</span> Introduction</h2>
-<div class="outline-text-2" id="text-1">
-<p>
-The purpose of this repository is to contain my notes and reports regarding FPGA research.
-</p>
+<div class="" style="position: absolute; left: 5%; top: 35%; height: 50%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+> #### Derivation:
+> A precise description of how contents of existing files are used to derive new files.
 </div>
+<!-- .element: class="fragment" -->
+
+<style>
+.mermaid svg {
+	width: 500%;
+}
+</style>
+<div class="" style="position: absolute; left: 20%; top: 40%; height: 50%; width: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<div class="mermaid">
+	flowchart LR
+		subgraph der[Derivation]
+			subgraph padding[ ]
+				Source_Files --> Nix_Expression
+				Libraries --> Nix_Expression
+				Build_Tools --> Nix_Expression
+				System --> Nix_Expression
+				Nix_Expression --> Built_Software
+			end
+		end
+		classDef padding stroke:none,fill:none
+		class padding padding
+
 </div>
 
-<div id="outline-container-org43de056" class="outline-2">
-<h2 id="org43de056"><span class="section-number-2">2.</span> 2024-05-19</h2>
-<div class="outline-text-2" id="text-2">
-<div class="org-center">
-<p>
-<b><a href="./2024-05-19.pdf">PDF Version</a></b>
-</p>
+- When the libraries/build tools are also defined in Nix, we're able to achieve full reproducibility.
 </div>
-</div>
-<div id="outline-container-org3c27bc4" class="outline-3">
-<h3 id="org3c27bc4"><span class="section-number-3">2.1.</span> Summary</h3>
-<div class="outline-text-3" id="text-2-1">
-</div>
-<div id="outline-container-org363e975" class="outline-4">
-<h4 id="org363e975"><span class="section-number-4">2.1.1.</span> Planning</h4>
-<div class="outline-text-4" id="text-2-1-1">
-</div>
-<ol class="org-ol">
-<li><a id="org6798b3a"></a><span class="done DONE">DONE</span> Browse smartcam module source code<br /></li>
-<li><a id="org5566b90"></a><span class="done DONE">DONE</span> Compile smartcam code<br /></li>
-<li><a id="orgf151f17"></a><span class="todo TODO">TODO</span> Modify smartcam code to use other kernels<br /></li>
-</ol>
-</div>
-<div id="outline-container-orgc23e082" class="outline-4">
-<h4 id="orgc23e082"><span class="section-number-4">2.1.2.</span> Achievements</h4>
-<div class="outline-text-4" id="text-2-1-2">
-<p>
-Modified the smartcam code in order to compile an executable that utilizes PL
-logic with high-level synthesis.
-</p>
-</div>
-</div>
-</div>
-<div id="outline-container-orgca690db" class="outline-3">
-<h3 id="orgca690db"><span class="section-number-3">2.2.</span> MIPI-CSI2 Capture</h3>
-<div class="outline-text-3" id="text-2-2">
-<p>
-Camera data is accessed via a DMA (direct memory access) channel.
-</p>
+<!-- .element: class="fragment" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
-<p>
-The image below, presented in <a href="https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/docs/smartcamera/docs/sw_arch_platform.html">Software Architecture of the Platform</a> represents a
-high-level overview of the pipeline.
-</p>
-<p>
-<img src="https://xilinx.github.io/kria-apps-docs/kv260/2022.1/build/html/_images/video_capture1.png" alt="video_capture1.png" />
-As can be seen, <code>/dev/video*</code> enables access to the camera via the DMA engine
-that connects directly to the <a href="https://www.xilinx.com/products/intellectual-property/v-frmbuf.html">Frmbuf Wr IP Core</a>.
-</p>
+### `Nixpkgs`: The Package Repository
+
+- A [monorepo](https://github.com/NixOS/nixpkgs) containing Nix expressions for building a multitude of software.
+- [NixOS Search](https://search.nixos.org/packages) is a good tool for finding packages available on nixpkgs (and its Nix expression).
+- It is considered one of the [most up-to-date package repositories](https://repology.org/repositories/graphs):
+
+<img src="Pasted image 20240718053401.png" alt="" style="width: 1000px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## `Nix`: The Package Manager
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### `Nix` Installation
+[Nix Installation Website](https://nixos.org/download/)
+
+<img src="Pasted image 20240717165205.png" alt="" style="display: flex; flex-direction: column; align-items: center; justify-content: center; align-self: center; object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### Nix Package Manager Usage
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->Build, run and install packages defined in the `Nix` language.
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Make a Nix package available in an **ephemeral** shell:
+
+```bash
+$ htop
+htop: command not found
+
+$ nix-shell -p htop
+...
+[nix-shell]$ htop # Works just fine
+[nix-shell]$
+exit
+
+$ htop # Returned to normal shell with no htop available
+htop: command not found
+```
+<!-- .element: class="fragment" data-fragment-index="2" -->
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->Install a package globally
+<!-- .element: class="fragment" data-fragment-index="3" -->
+```bash
+$ nix-env -iA nixpkgs.htop
+$ htop # Works
+```
+<!-- .element: class="fragment" data-fragment-index="3" -->
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->Build a package from local file `default.nix`
+```bash
+$ nix-build
+...
+$ ls -la
+default.nix
+result/ -> /nix/store/...
+```
+<!-- .element: class="fragment" data-fragment-index="4" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### `Nix` Package Manager Example Usage: Let's try using Python
+Python is not installed:
+<style>
+.reveal pre {
+	font-size: 28px;
+}
+.reveal pre code {
+	max-height: 800px;
+}
+</style>
+```bash
+$ python3
+The program 'python3' is not in your PATH. It is provided by several packages.
+You can make it available in an ephemeral shell by typing one of the following:
+  nix-shell -p graalvmCEPackages.graalpy
+  nix-shell -p ihaskell
+  nix-shell -p jupyter
+  nix-shell -p jupyter-all
+  nix-shell -p python3
+  nix-shell -p python310
+  nix-shell -p python310Full
+  nix-shell -p python312
+  nix-shell -p python312Full
+  nix-shell -p python313
+  nix-shell -p python313Full
+  nix-shell -p python38
+  nix-shell -p python38Full
+  nix-shell -p python39
+  nix-shell -p python39Full
+  nix-shell -p python3Full
+  nix-shell -p python3Minimal
+  nix-shell -p qtile
+```
+<!-- .element: class="fragment" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### `Nix` Package Manager Example Usage: Let's try using Python
+Let's use `Python 3.10`:
+```bash
+$ nix-shell -p python310
+this path will be fetched (29.24 MiB download, 83.11 MiB unpacked):
+  /nix/store/igfc19nl0zv95wj77sf7nnmkbykb4idj-python3-3.10.14
+copying path '/nix/store/igfc19nl0zv95wj77sf7nnmkbykb4idj-python3-3.10.14' from 'https://cache.nixos.org'...
+
+[nix-shell]$ python3
+Python 3.10.14 (main, Mar 19 2024, 21:46:16) [GCC 13.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 
+```
+<!-- .element: class="fragment" -->
+
+Let's use `Python 3.11`.
+```bash
+$ nix-shell -p python311
+
+[nix-shell]$ python3
+Python 3.11.9 (main, Apr  2 2024, 08:25:04) [GCC 13.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 
+```
+<!-- .element: class="fragment" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### `NixOS`
+- Linux operating system where (almost) everything is configured and managed via `Nix` and `nixpkgs`.
+- You configure your system via a top-level configuration file written in Nix.
+- Ability to define *modules* for customizing functionality.
+
+#### Some Option Examples
+- [`users.users`](https://nixos.org/manual/nixos/stable/options#opt-users.users)
+- [`users.extraUsers.<name>.openssh.authorizedKeys.keyFiles`](https://nixos.org/manual/nixos/stable/options#opt-users.extraUsers._name_.openssh.authorizedKeys.keyFiles)
+- [`networking.proxy.httpProxy`](https://nixos.org/manual/nixos/stable/options#opt-networking.proxy.httpProxy)
+- [`virtualisation.docker.rootless.enable`](https://nixos.org/manual/nixos/stable/options#opt-virtualisation.docker.rootless.enable)
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### `NixOS` [Modules](https://nixos.wiki/wiki/NixOS_modules)
+
+NixOS modules offer a way to separate system options atomically.
+They are composed of three components:
+1. `imports` (ability to compose with other modules)
+2. `options` (options offered that other modules can access)
+3. `config` (actual configuration dependent on each option)
+
+```nix
+{
+  imports = [
+    # Paths to other modules.
+    # Compose this module out of smaller ones.
+  ];
+
+  options = {
+    # Option declarations.
+    # Declare what settings a user of this module module can set.
+    # Usually this includes a global "enable" option which defaults to false.
+  };
+
+  config = {
+    # Option definitions.
+    # Define what other settings, services and resources should be active.
+    # Usually these depend on whether a user of this module chose to "enable" it
+    # using the "option" above. 
+    # Options for modules imported in "imports" can be set here.
+  };
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## NixOS on Jetson AGX Xavier
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### `NixOS` on Jetson
+NVIDIA's Jetpack SDK ported to NixOS
+- https://github.com/anduril/jetpack-nixos
+- L4T packages with mainline kernel
+- CUDA, TensorRT, etc
+- Currently targetting Jetpack 5.1 (fork targetting Jetpack 6 exists)
+
+Jetson AGX Xavier/Orin configurations that utilize the above:
+- https://github.com/a-yyg/nixos-jetson
+- The configuration is setup in such a way that simply connecting the Jetsons to the network appropriately and doing `nix run github:serokell/deploy-rs` from a host PC are enough to deploy the proper configuration to each machine.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### `NixOS`Jetson Configuration
+Repository structure:
+
+<div class="" style="position: absolute; left: 5%; top: 25%; height: 70%; width: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="Pasted image 20240718132042.png" alt="" style="width: 400px; object-fit: fill">
+
 </div>
+<div class="" style="position: absolute; left: 35%; top: 15%; height: 70%; width: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->**`home-modules`**: Contains user-level configurations.
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->**`modules`**: Contains system-level hardware configuration.
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->**`secrets`**: Encrypted secrets that will be decrypted upon deployment.
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->**`systems`**: The "meat" of the configuration.
+- &shy;<!-- .element: class="fragment" data-fragment-index="5" -->**`flake.nix`**: The top-level nix expresson.
+- &shy;<!-- .element: class="fragment" data-fragment-index="6" -->**`flake.lock`**: Lock-file to track inputs.
 </div>
-<div id="outline-container-orgf15c340" class="outline-3">
-<h3 id="orgf15c340"><span class="section-number-3">2.3.</span> VVAS</h3>
-<div class="outline-text-3" id="text-2-3">
-<p>
-<a href="https://www.xilinx.com/products/design-tools/vitis/vvas.html">Vitis Video Analytics SDK</a> is Xilinx&rsquo;s software stack for building video processing applications.
-The methodology for creating camera processing applications seem to be based
-around the development of <a href="https://gstreamer.freedesktop.org/">GStreamer</a> plugins.
-</p>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 20%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+### AGX Xavier Configuration Example
 </div>
+
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[]
+{                                                                             
+  description = "Nvidia Jetson Xavier AGX";                                  
+
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-23.11";
+    jetpack.url = "github:anduril/jetpack-nixos/8f27a0b1406c628b47cfd36932d70a96baf90d72";
+    agenix.url = "github:ryantm/agenix";
+
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  
+  outputs = { self, ... }@inputs:
+	...
+  {
+    nixosConfigurations.xavier = (import ./systems/xavier.nix) {
+      inherit (inputs) nixpkgs jetpack agenix home-manager nixvim;
+      inherit pkgs;
+    };
+	...
+
+    deploy = {
+      sshUser = "root";
+      user = "root";
+      sshOpts = [ "-i" "/home/host/.ssh/jetson" ];
+      autoRollback = false;
+      magicRollback = false;
+      remoteBuild = true;
+
+      nodes = {
+        "xavier" = {
+          hostname = "100.74.155.72";
+          profiles.system = {
+            path = inputs.deploy-rs.lib.aarch64-linux.activate.nixos self.nixosConfigurations.xavier;
+          };
+        };
+      };
+    };
+  };
+}
+```
 </div>
+<!-- .element: class="fragment fade-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[18-21]
+{                                                                             
+  description = "Nvidia Jetson Xavier AGX";                                  
+
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-23.11";
+    jetpack.url = "github:anduril/jetpack-nixos/8f27a0b1406c628b47cfd36932d70a96baf90d72";
+    agenix.url = "github:ryantm/agenix";
+
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  
+  outputs = { self, ... }@inputs:
+	...
+  {
+    nixosConfigurations.xavier = (import ./systems/xavier.nix) {
+      inherit (inputs) nixpkgs jetpack agenix home-manager nixvim;
+      inherit pkgs;
+    };
+	...
+
+    deploy = {
+      sshUser = "root";
+      user = "root";
+      sshOpts = [ "-i" "/home/host/.ssh/jetson" ];
+      autoRollback = false;
+      magicRollback = false;
+      remoteBuild = true;
+
+      nodes = {
+        "xavier" = {
+          hostname = "100.74.155.72";
+          profiles.system = {
+            path = inputs.deploy-rs.lib.aarch64-linux.activate.nixos self.nixosConfigurations.xavier;
+          };
+        };
+      };
+    };
+  };
+}
+```
 </div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix
+nixosConfigurations.xavier = (import ./systems/xavier.nix) {
+  inherit (inputs) nixpkgs jetpack agenix home-manager nixvim;
+  inherit pkgs;
+};
+```
 </div>
-</body>
+<!-- .element: class="fragment fade-in" data-fragment-index="2" -->
+
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+The system configuration is imported through the file **`./systems/xavier.nix`**.
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 20%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+### AGX Xavier Configuration Example
+</div>
+
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[]
+{ pkgs, ... }@args:
+let
+  xavier = import ./jetson.nix
+  ({
+    hostname = "xavier";
+    modules = [
+      ../modules/xavier-hardware.nix
+      {
+        age.secrets.tailscale.file = ../secrets/tailscale.age;
+        age.secrets.cachix-xavier.file = ../secrets/cachix-xavier.age;
+      }
+      ({ config, ... }: {
+        services.cachix-watch-store = {
+          enable = true;
+          cacheName = "a-yyg";
+          cachixTokenFile = config.age.secrets.cachix-xavier.path;
+        };
+      })
+      ({ config, ... }: { # Tailscale
+        environment.systemPackages = [ pkgs.tailscale ];
+        services.tailscale.enable = true;
+        services.tailscale.authKeyFile = config.age.secrets.tailscale.path;
+
+        services.resolved = {
+          enable = true;
+          fallbackDns = [ "1.1.1.1#one.one.one.one" ];
+        };
+      })
+    ];
+  } // args);
+in xavier
+```
+</div>
+<!-- .element: class="fragment fade-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[3]
+{ pkgs, ... }@args:
+let
+  xavier = import ./jetson.nix
+  ({
+    hostname = "xavier";
+    modules = [
+      ../modules/xavier-hardware.nix
+      {
+        age.secrets.tailscale.file = ../secrets/tailscale.age;
+        age.secrets.cachix-xavier.file = ../secrets/cachix-xavier.age;
+      }
+      ({ config, ... }: {
+        services.cachix-watch-store = {
+          enable = true;
+          cacheName = "a-yyg";
+          cachixTokenFile = config.age.secrets.cachix-xavier.path;
+        };
+      })
+      ({ config, ... }: { # Tailscale
+        environment.systemPackages = [ pkgs.tailscale ];
+        services.tailscale.enable = true;
+        services.tailscale.authKeyFile = config.age.secrets.tailscale.path;
+
+        services.resolved = {
+          enable = true;
+          fallbackDns = [ "1.1.1.1#one.one.one.one" ];
+        };
+      })
+    ];
+  } // args);
+in xavier
+```
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[4-30]
+{ pkgs, ... }@args:
+let
+  xavier = import ./jetson.nix
+  ({
+    hostname = "xavier";
+    modules = [
+      ../modules/xavier-hardware.nix
+      {
+        age.secrets.tailscale.file = ../secrets/tailscale.age;
+        age.secrets.cachix-xavier.file = ../secrets/cachix-xavier.age;
+      }
+      ({ config, ... }: {
+        services.cachix-watch-store = {
+          enable = true;
+          cacheName = "a-yyg";
+          cachixTokenFile = config.age.secrets.cachix-xavier.path;
+        };
+      })
+      ({ config, ... }: { # Tailscale
+        environment.systemPackages = [ pkgs.tailscale ];
+        services.tailscale.enable = true;
+        services.tailscale.authKeyFile = config.age.secrets.tailscale.path;
+
+        services.resolved = {
+          enable = true;
+          fallbackDns = [ "1.1.1.1#one.one.one.one" ];
+        };
+      })
+    ];
+  } // args);
+in xavier
+```
+</div>
+<!-- .element: class="fragment fade-in" data-fragment-index="2" -->
+
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+`import ./jetson.nix` imports the default configuration defined in `jetson.nix`
+</div>
+<!-- .element: class="fragment fade-out" data-fragment-index="2" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+Whatever comes after `import ./jetson.nix` is an argument passed to it.
+</div>
+<!-- .element: class="fragment fade-in" data-fragment-index="2" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 20%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+### Jetson Common Configuration
+</div>
+
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[]
+{ nixpkgs, jetpack, agenix, home-manager, nixvim, ... }@args:
+let
+  system = "aarch64-linux";
+  pkgs = import nixpkgs {
+    inherit system;
+    overlays = [
+      jetpack.overlays.default
+    ];
+  };
+in
+nixpkgs.lib.nixosSystem {
+  inherit system;
+  modules = [
+    jetpack.nixosModules.default
+    agenix.nixosModules.default
+    ../modules/filesystem.nix
+...
+    { # SSH
+      services.openssh = {
+        enable = true;
+        permitRootLogin = "yes";
+      };
+    }
+    { # User
+      networking.hostName = args.hostname;
+      system.stateVersion = "23.11";
+
+      users.mutableUsers = true;
+      users.users.nixos = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "video" ];
+        uid = 1000;
+      };
+    }
+    {
+      users.users.nixos = {
+        extraGroups = [ "docker" ];
+      };
+      virtualisation.docker.rootless = {
+        enable = true;
+        setSocketVariable = true;
+      };
+    }
+    { # Utils
+      environment.systemPackages = with pkgs; [
+        git
+      ];
+    }
+    {
+      fileSystems."/nfs" = {
+        device = "192.168.151.39:/export";
+        fsType = "nfs";
+      };
+      fileSystems."/hdd" = {
+        device = "192.168.151.39:/mnt/hdd";
+        fsType = "nfs";
+      };
+    }
+    home-manager.nixosModules.home-manager {
+      home-manager.users.nixos = {
+        imports = [
+          nixvim.homeManagerModules.nixvim
+          ../home-modules/home.nix
+        ];
+      };
+    }
+  ] ++ (args.modules or []);
+}
+```
+</div>
+<!-- .element: class="fragment fade-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[18-23]
+{ nixpkgs, jetpack, agenix, home-manager, nixvim, ... }@args:
+let
+  system = "aarch64-linux";
+  pkgs = import nixpkgs {
+    inherit system;
+    overlays = [
+      jetpack.overlays.default
+    ];
+  };
+in
+nixpkgs.lib.nixosSystem {
+  inherit system;
+  modules = [
+    jetpack.nixosModules.default
+    agenix.nixosModules.default
+    ../modules/filesystem.nix
+...
+    { # SSH
+      services.openssh = {
+        enable = true;
+        permitRootLogin = "yes";
+      };
+    }
+    { # User
+      networking.hostName = args.hostname;
+      system.stateVersion = "23.11";
+
+      users.mutableUsers = true;
+      users.users.nixos = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "video" ];
+        uid = 1000;
+      };
+    }
+    {
+      users.users.nixos = {
+        extraGroups = [ "docker" ];
+      };
+      virtualisation.docker.rootless = {
+        enable = true;
+        setSocketVariable = true;
+      };
+    }
+    { # Utils
+      environment.systemPackages = with pkgs; [
+        git
+      ];
+    }
+    {
+      fileSystems."/nfs" = {
+        device = "192.168.151.39:/export";
+        fsType = "nfs";
+      };
+      fileSystems."/hdd" = {
+        device = "192.168.151.39:/mnt/hdd";
+        fsType = "nfs";
+      };
+    }
+    home-manager.nixosModules.home-manager {
+      home-manager.users.nixos = {
+        imports = [
+          nixvim.homeManagerModules.nixvim
+          ../home-modules/home.nix
+        ];
+      };
+    }
+  ] ++ (args.modules or []);
+}
+```
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[24-34]
+{ nixpkgs, jetpack, agenix, home-manager, nixvim, ... }@args:
+let
+  system = "aarch64-linux";
+  pkgs = import nixpkgs {
+    inherit system;
+    overlays = [
+      jetpack.overlays.default
+    ];
+  };
+in
+nixpkgs.lib.nixosSystem {
+  inherit system;
+  modules = [
+    jetpack.nixosModules.default
+    agenix.nixosModules.default
+    ../modules/filesystem.nix
+...
+    { # SSH
+      services.openssh = {
+        enable = true;
+        permitRootLogin = "yes";
+      };
+    }
+    { # User
+      networking.hostName = args.hostname;
+      system.stateVersion = "23.11";
+
+      users.mutableUsers = true;
+      users.users.nixos = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "video" ];
+        uid = 1000;
+      };
+    }
+    {
+      users.users.nixos = {
+        extraGroups = [ "docker" ];
+      };
+      virtualisation.docker.rootless = {
+        enable = true;
+        setSocketVariable = true;
+      };
+    }
+    { # Utils
+      environment.systemPackages = with pkgs; [
+        git
+      ];
+    }
+    {
+      fileSystems."/nfs" = {
+        device = "192.168.151.39:/export";
+        fsType = "nfs";
+      };
+      fileSystems."/hdd" = {
+        device = "192.168.151.39:/mnt/hdd";
+        fsType = "nfs";
+      };
+    }
+    home-manager.nixosModules.home-manager {
+      home-manager.users.nixos = {
+        imports = [
+          nixvim.homeManagerModules.nixvim
+          ../home-modules/home.nix
+        ];
+      };
+    }
+  ] ++ (args.modules or []);
+}
+```
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="2" -->
+<div class="" style="position: absolute; left: 1%; top: 15%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[44-48]
+{ nixpkgs, jetpack, agenix, home-manager, nixvim, ... }@args:
+let
+  system = "aarch64-linux";
+  pkgs = import nixpkgs {
+    inherit system;
+    overlays = [
+      jetpack.overlays.default
+    ];
+  };
+in
+nixpkgs.lib.nixosSystem {
+  inherit system;
+  modules = [
+    jetpack.nixosModules.default
+    agenix.nixosModules.default
+    ../modules/filesystem.nix
+...
+    { # SSH
+      services.openssh = {
+        enable = true;
+        permitRootLogin = "yes";
+      };
+    }
+    { # User
+      networking.hostName = args.hostname;
+      system.stateVersion = "23.11";
+
+      users.mutableUsers = true;
+      users.users.nixos = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "video" ];
+        uid = 1000;
+      };
+    }
+    {
+      users.users.nixos = {
+        extraGroups = [ "docker" ];
+      };
+      virtualisation.docker.rootless = {
+        enable = true;
+        setSocketVariable = true;
+      };
+    }
+    { # Utils
+      environment.systemPackages = with pkgs; [
+        git
+      ];
+    }
+    {
+      fileSystems."/nfs" = {
+        device = "192.168.151.39:/export";
+        fsType = "nfs";
+      };
+      fileSystems."/hdd" = {
+        device = "192.168.151.39:/mnt/hdd";
+        fsType = "nfs";
+      };
+    }
+    home-manager.nixosModules.home-manager {
+      home-manager.users.nixos = {
+        imports = [
+          nixvim.homeManagerModules.nixvim
+          ../home-modules/home.nix
+        ];
+      };
+    }
+  ] ++ (args.modules or []);
+}
+```
+</div>
+<!-- .element: class="fragment fade-in" data-fragment-index="3" -->
+
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+Setup things like SSH, the user, packages...
+</div>
+<!-- .element: class="fragment fade-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+Setup things like **SSH**, the user, packages...
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+Setup things like SSH, **the user**, packages...
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="2" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+Setup things like SSH, the user, **packages**...
+</div>
+<!-- .element: class="fragment fade-in" data-fragment-index="3" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### ROS on Nix
+- Ticket: https://map4.atlassian.net/browse/SP-216
+-  It’s possible to test ROS on Nix without installing NixOS.
+
+- https://github.com/lopsided98/nix-ros-overlay 
+	- Provides the Nix packaging for most packages available in the package index.
+- https://github.com/hacker1024/nix-ros-workspace
+	- Provides utility functions for creating ROS workspaces.
+
+#### Example: Make rviz and turtlesim from ROS2 Humble available:
+
+```bash
+$ nix-shell \
+	--extra-substituters 'https://ros.cachix.org' --extra-trusted-public-keys 'ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo=' \
+	https://github.com/hacker1024/nix-ros-workspace/archive/master.tar.gz -A cli.env \
+	--argstr distro humble \
+	--argstr rosPackages 'rviz2 turtlesim'
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### Example: Running `m4_tensorrt_yolox` on NixOS/Jetson
+- Repository: https://github.com/a-yyg/map4-nixpkgs
+
+Building and running the application:
+```bash
+nix build github:a-yyg/map4-nixpkgs#ros2-jetson
+# A `result` folder is generated, containing all the necessary packages
+./result/bin/ros2 m4_tensorrt_yolox tensorrt_launch.xml \
+	model_path:=/home/nixos/m4_tensorrt_yolox/model/yolo_m_nms.onnx
+	# Have to specify model because currently LFS in private repo is not supported
+
+[INFO] [launch]: All log files can be found below /home/nixos/.ros/log/2024-07-18-06-06-55-861532-xavier-86631
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [m4_tensorrt_yolox_node_exe-1]: process started with pid [86632]
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282821.796780536] [tensorrt_common]: Loaded engine size: 136 MiB
+[m4_tensorrt_yolox_node_exe-1] [WARN] [1721282821.878085328] [tensorrt_common]: Using an engine plan file across different models of devices is not recommended and is likely to affect performance or even cause errors.
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282824.185417885] [tensorrt_common]: [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +261, GPU +240, now: CPU 902, GPU 3224 (MiB)
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282824.895421708] [tensorrt_common]: [MemUsageChange] Init cuDNN: CPU +81, GPU +81, now: CPU 983, GPU 3305 (MiB)
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282824.906384823] [tensorrt_common]: [MemUsageChange] TensorRT-managed allocation in engine deserialization: CPU +0, GPU +137, now: CPU 0, GPU 137 (MiB)
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282824.964060749] [tensorrt_common]: [MemUsageChange] Init cuBLAS/cuBLASLt: CPU +0, GPU +0, now: CPU 591, GPU 3049 (MiB)
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282824.966348275] [tensorrt_common]: [MemUsageChange] Init cuDNN: CPU +0, GPU +0, now: CPU 591, GPU 3049 (MiB)
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282824.980064986] [tensorrt_common]: [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +53, now: CPU 0, GPU 190 (MiB)
+[m4_tensorrt_yolox_node_exe-1] [WARN] [1721282845.894791867] [m4_tensorrt_yolox]: No camera intrinsic are available, not performing rectification.
+[m4_tensorrt_yolox_node_exe-1] [INFO] [1721282846.520292108] [m4_tensorrt_yolox]: cameraInfoCallback. Intrinsics obtained.
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Results
+
+Results of running on PC. Was also able to confirm Jetson runs properly.
+
+<img src="Pasted image 20240718151451.png" alt="" style="width: 1400px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### What was needed to build `m4_tensorrt_yolox` for Nix?
+These are the original dependencies inside the `package.xml`:
+<img src="Pasted image 20240718152028.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 20%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+### First: Write `m4_tensorrt_yolox`'s `default.nix`
+</div>
+
+<div class="" style="position: absolute; left: 1%; top: 18%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[]
+{ buildRosPackage
+, ament-cmake
+, ament-cmake-core
+, ament-cmake-auto
+, ament-lint-auto
+, ament-lint-common
+, rclcpp-components
+, image-transport
+, cv-bridge
+, opencv
+, tier4-perception-msgs
+, autoware-auto-perception-msgs
+, cuda-utils
+, tensorrt-common
+, cudatoolkit
+, builtin-interfaces
+, sensor-msgs
+}:
+buildRosPackage rec {
+  name = "m4-tensorrt-yolox";
+  # This currently has the issue of LFS not working,
+  # so the models are not pulled.
+  src = builtins.fetchGit {
+    url = "git@github.com:tier4/m4_tensorrt_yolox.git";
+    ref = "main";
+    rev = "39d262f02f7a10db1dcec5b0f8fcbc62f38a58b9";
+  };
+
+  # Allow the user to specify the model and label paths
+  prePatch = ''
+    sed -i 's|let name="label_path" value=|arg name="label_path" default=|' launch/tensorrt_launch.xml
+    sed -i 's|let name="model_path" value=|arg name="model_path" default=|' launch/tensorrt_launch.xml
+  '';
+
+  buildType = "ament_cmake";
+  buildInputs = [
+    ament-cmake
+    ament-cmake-core
+    ament-cmake-auto
+    ament-lint-auto
+    rclcpp-components
+    image-transport
+    cv-bridge
+    opencv
+    tier4-perception-msgs
+    autoware-auto-perception-msgs
+    cuda-utils
+    tensorrt-common
+    cudatoolkit
+  ];
+  nativeBuildInputs = buildInputs;
+  checkInputs = [ ament-lint-common ];
+  propagatedBuildInputs = [
+    builtin-interfaces
+    sensor-msgs
+  ];
+}
+```
+</div>
+<!-- .element: class="fragment fade-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 18%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[1-18]
+{ buildRosPackage
+, ament-cmake
+, ament-cmake-core
+, ament-cmake-auto
+, ament-lint-auto
+, ament-lint-common
+, rclcpp-components
+, image-transport
+, cv-bridge
+, opencv
+, tier4-perception-msgs
+, autoware-auto-perception-msgs
+, cuda-utils
+, tensorrt-common
+, cudatoolkit
+, builtin-interfaces
+, sensor-msgs
+}:
+buildRosPackage rec {
+  name = "m4-tensorrt-yolox";
+  # This currently has the issue of LFS not working,
+  # so the models are not pulled.
+  src = builtins.fetchGit {
+    url = "git@github.com:tier4/m4_tensorrt_yolox.git";
+    ref = "main";
+    rev = "39d262f02f7a10db1dcec5b0f8fcbc62f38a58b9";
+  };
+
+  # Allow the user to specify the model and label paths
+  prePatch = ''
+    sed -i 's|let name="label_path" value=|arg name="label_path" default=|' launch/tensorrt_launch.xml
+    sed -i 's|let name="model_path" value=|arg name="model_path" default=|' launch/tensorrt_launch.xml
+  '';
+
+  buildType = "ament_cmake";
+  buildInputs = [
+    ament-cmake
+    ament-cmake-core
+    ament-cmake-auto
+    ament-lint-auto
+    rclcpp-components
+    image-transport
+    cv-bridge
+    opencv
+    tier4-perception-msgs
+    autoware-auto-perception-msgs
+    cuda-utils
+    tensorrt-common
+    cudatoolkit
+  ];
+  nativeBuildInputs = buildInputs;
+  checkInputs = [ ament-lint-common ];
+  propagatedBuildInputs = [
+    builtin-interfaces
+    sensor-msgs
+  ];
+}
+```
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: 1%; top: 18%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[19-57]
+{ buildRosPackage
+, ament-cmake
+, ament-cmake-core
+, ament-cmake-auto
+, ament-lint-auto
+, ament-lint-common
+, rclcpp-components
+, image-transport
+, cv-bridge
+, opencv
+, tier4-perception-msgs
+, autoware-auto-perception-msgs
+, cuda-utils
+, tensorrt-common
+, cudatoolkit
+, builtin-interfaces
+, sensor-msgs
+}:
+buildRosPackage rec {
+  name = "m4-tensorrt-yolox";
+  # This currently has the issue of LFS not working,
+  # so the models are not pulled.
+  src = builtins.fetchGit {
+    url = "git@github.com:tier4/m4_tensorrt_yolox.git";
+    ref = "main";
+    rev = "39d262f02f7a10db1dcec5b0f8fcbc62f38a58b9";
+  };
+
+  # Allow the user to specify the model and label paths
+  prePatch = ''
+    sed -i 's|let name="label_path" value=|arg name="label_path" default=|' launch/tensorrt_launch.xml
+    sed -i 's|let name="model_path" value=|arg name="model_path" default=|' launch/tensorrt_launch.xml
+  '';
+
+  buildType = "ament_cmake";
+  buildInputs = [
+    ament-cmake
+    ament-cmake-core
+    ament-cmake-auto
+    ament-lint-auto
+    rclcpp-components
+    image-transport
+    cv-bridge
+    opencv
+    tier4-perception-msgs
+    autoware-auto-perception-msgs
+    cuda-utils
+    tensorrt-common
+    cudatoolkit
+  ];
+  nativeBuildInputs = buildInputs;
+  checkInputs = [ ament-lint-common ];
+  propagatedBuildInputs = [
+    builtin-interfaces
+    sensor-msgs
+  ];
+}
+```
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="2" -->
+<div class="" style="position: absolute; left: 1%; top: 18%; height: 90%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+```nix[35-56]
+{ buildRosPackage
+, ament-cmake
+, ament-cmake-core
+, ament-cmake-auto
+, ament-lint-auto
+, ament-lint-common
+, rclcpp-components
+, image-transport
+, cv-bridge
+, opencv
+, tier4-perception-msgs
+, autoware-auto-perception-msgs
+, cuda-utils
+, tensorrt-common
+, cudatoolkit
+, builtin-interfaces
+, sensor-msgs
+}:
+buildRosPackage rec {
+  name = "m4-tensorrt-yolox";
+  # This currently has the issue of LFS not working,
+  # so the models are not pulled.
+  src = builtins.fetchGit {
+    url = "git@github.com:tier4/m4_tensorrt_yolox.git";
+    ref = "main";
+    rev = "39d262f02f7a10db1dcec5b0f8fcbc62f38a58b9";
+  };
+
+  # Allow the user to specify the model and label paths
+  prePatch = ''
+    sed -i 's|let name="label_path" value=|arg name="label_path" default=|' launch/tensorrt_launch.xml
+    sed -i 's|let name="model_path" value=|arg name="model_path" default=|' launch/tensorrt_launch.xml
+  '';
+
+  buildType = "ament_cmake";
+  buildInputs = [
+    ament-cmake
+    ament-cmake-core
+    ament-cmake-auto
+    ament-lint-auto
+    rclcpp-components
+    image-transport
+    cv-bridge
+    opencv
+    tier4-perception-msgs
+    autoware-auto-perception-msgs
+    cuda-utils
+    tensorrt-common
+    cudatoolkit
+  ];
+  nativeBuildInputs = buildInputs;
+  checkInputs = [ ament-lint-common ];
+  propagatedBuildInputs = [
+    builtin-interfaces
+    sensor-msgs
+  ];
+}
+```
+</div>
+<!-- .element: class="fragment fade-in" data-fragment-index="3" -->
+
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+`default.nix`: Define a function that accepts as input all dependencies and builds derivation by setting each dependency properly.
+</div>
+<!-- .element: class="fragment fade-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+`default.nix`: Define a function that **accepts as input all dependencies** and builds derivation by setting each dependency properly.
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="1" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+`default.nix`: Define a function that accepts as input all dependencies and **builds derivation** by setting each dependency properly.
+</div>
+<!-- .element: class="fragment fade-in-then-out" data-fragment-index="2" -->
+<div class="" style="position: absolute; left: -1%; top: 15%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+`default.nix`: Define a function that accepts as input all dependencies and builds derivation by **setting each dependency properly**.
+</div>
+<!-- .element: class="fragment fade-in" data-fragment-index="3" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<grid absolute="true" drag="100 100" drop="0 0">
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 20%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+### Defining Dependencies
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 18%; height: 50%; width: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+We may have defined the Nix function that builds `m4_tensorrt_yolox`, but in order to use it we need to make it so we can give all of the dependencies as Nix inputs.
+</div>
+<div class="" style="position: absolute; left: 5%; top: 25%; height: 90%; width: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+- Solution: recursively perform the same procedure for all necessary dependencies:
+
+1. &shy;<!-- .element: class="fragment" data-fragment-index="1" -->Create `default.nix` based on `package.xml`.
+1. &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Clone each dependency in `.repos` file or `git submodule`.
+1. &shy;<!-- .element: class="fragment" data-fragment-index="3" -->Take each dependency as root and perform the steps starting from 1 again.
+
+</div>
+
+<div class="" style="position: absolute; left: 55%; top: 18%; height: 90%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="Pasted image 20240718151826.png" alt="" style="object-fit: scale-down">
+
+<!-- .element: class="fragment" -->
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<!-- .element: style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+### **Advantages**
+- Reusable dependencies between packages (when compared to Docker images).
+	- No wasted space or compile time.
+	- Able to build once and deploy everywhere with [binary caching](https://app.cachix.org/).
+- Declarative configuration means no need to fish for configuration files in several locations. Easier to version control **entire systems**.
+	- Easier to ensure correctness of configuration (when compared to e.g. Ansible).
+	- If the configuration is correct, the deployed system should be correct.
+- Easy distributed building/cross-compiling.
+	
+### **Disadvantages / Limitations**
+- Necessary to generate Nix code for most packages.
+- Files managed by NixOS are read-only. This means there is only one point of failure (the NixOS configuration file), but it also means that iterative development is difficult if not impossible. You can't "just edit" system files like `/etc/systemd/` services.
+- Non-mainstream technology == Harder to get official support. Need to solve problems ourselves.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<split even gap="3">
+
+### Comparison to Ansible
+- NixOS configuration is not step-by-step (e.g. create this user then install these packages then clone this repository.) Instead, it is entirely declarative.
+
+### Comparison to Docker
+- Docker offers true isolation, especially when running a VM. Nix is not a VM.
+- How is the performance comparison? Haven't tested yet.
+
+</split>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1080px; width: 1920px; min-height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# End
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  ElapsedTimeBar
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+			]
+		},
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":"1920","height":"1080","margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default","mermaid":{"themeVariables":{"fontSize":"32px"},"theme":"neutral"}}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
 </html>
